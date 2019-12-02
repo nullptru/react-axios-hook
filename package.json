@@ -1,0 +1,63 @@
+{
+  "name": "react-axios-hook",
+  "version": "1.0.0",
+  "description": "axios hook for react",
+  "main": "index.ts",
+  "author": "nullptru@gmail.com",
+  "license": "ISC",
+  "typings": "./index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "axios",
+    "typescript"
+  ],
+  "dependencies": {
+    "@babel/runtime": "7.7.4"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0-0",
+    "axios": "^0.18.0 || ^0.19.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.7.4",
+    "@babel/core": "7.7.4",
+    "@babel/plugin-transform-runtime": "7.7.4",
+    "@babel/preset-env": "7.7.4",
+    "@types/node": "12.12.14",
+    "@types/react": "16.9.13",
+    "@types/react-dom": "16.9.4",
+    "axios": "0.19.0",
+    "babel-eslint": "10.0.3",
+    "cross-env": "6.0.3",
+    "cz-conventional-changelog": "3.0.2",
+    "eslint": "6.7.1",
+    "eslint-config-prettier": "6.7.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-prettier": "3.1.1",
+    "eslint-plugin-react-hooks": "2.3.0",
+    "husky": "3.1.0",
+    "lint-staged": "9.5.0",
+    "prettier": "1.19.1",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
+    "standard-version": "7.0.1",
+    "typescript": "3.7.2"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged",
+      "post-merge": "npm i"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}
