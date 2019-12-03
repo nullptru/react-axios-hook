@@ -1,12 +1,14 @@
 {
   "name": "react-axios-hook",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "axios hook for react",
   "main": "index.ts",
   "author": "nullptru@gmail.com",
   "license": "MIT",
   "typings": "./types",
   "scripts": {
+    "ci": "npx git-cz",
+    "release": "standard-version",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -53,7 +55,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged",
-      "post-merge": "npm i"
+      "post-merge": "yarn"
     }
   },
   "lint-staged": {
@@ -61,5 +63,10 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
