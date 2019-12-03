@@ -3,7 +3,7 @@ import { AxiosConfigProps } from "../types"
 import Axios from "axios"
 import { isObject } from "./utils"
 
-const AxiosContext = React.createContext(null);
+export const AxiosContext = React.createContext(null);
 
 const AxiosConfig: React.FC<AxiosConfigProps> = (props: PropsWithChildren<AxiosConfigProps>) => {
   const { config } = props

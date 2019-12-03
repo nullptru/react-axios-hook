@@ -5,15 +5,15 @@ declare interface AxiosConfigProps {
 }
 
 declare interface UseAxiosProps {
-  manual: boolean
+  trigger: boolean | (() => boolean);
 }
 
 declare interface Response<T> {
-  data: T,
-  loading: boolean,
+  response: T
+  loading: boolean
   error: any
 }
 
 declare interface RefreshFunc<T> {
-  (overwriteConfig?: any): Response<T>
+  (overwriteConfig?: AxiosRequestConfig, overwriteOptions?: any): Promise<T> | Error
 }
