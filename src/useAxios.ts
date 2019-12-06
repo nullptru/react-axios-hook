@@ -14,9 +14,17 @@ enum ActionEnum {
   REQUEST_ERROR = 'REQUEST_ERROR'
 }
 
+function normalizeConfig(config: AxiosRequestConfig|string): AxiosRequestConfig {
+  if (typeof config === 'string') { // only url
+    return { url: config }
+  } else {
+    return config
+  }
+}
+
 function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxiosProps): [Response<T>, RefreshFunc<T>] {
-  const globalConfig = useContext(AxiosContext) || {};
-  let axiosConfig = {}
+  const globalConfig = useContext(AxiosContext) || {}
+  const axiosConfig = normalizeConfig(config)
   const hookOptions = { trigger: true, ...globalConfig.globalOptions, ...options }
   const axiosInstance: AxiosInstance = globalConfig.axiosInstance || Axios.create()
 
@@ -31,22 +39,16 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
       default:
         return state
     }
-  }, []);
-
+  }, [])
   const [state, dispatch] = useReducer(reducer, { response: undefined, error: undefined, loading: false })
 
-  if (typeof config === 'string') { // only url
-    axiosConfig = { url: config }
-  } else {
-    axiosConfig = config
-  }
-
   // for reactive detect
-  const stringifyConfig = JSON.stringify(axiosConfig);
+  const stringifyConfig = JSON.stringify(axiosConfig)
 
-  const refresh = useCallback((overwriteConfig?: AxiosRequestConfig, overwriteOptions?: UseAxiosProps/* for further use*/): Promise<T> | Error => {
+  const refresh = useCallback((overwriteConfig?: AxiosRequestConfig | string, overwriteOptions?: UseAxiosProps/* for further use*/): Promise<T> | Error => {
     dispatch({ type: ActionEnum.REQUEST_START  })
-    return axiosInstance.request<AxiosRequestConfig, T>({ ...axiosConfig, ...overwriteConfig }).then((res: T) => {
+    
+    return axiosInstance.request<AxiosRequestConfig, T>({ ...axiosConfig, ...normalizeConfig(overwriteConfig) }).then((res: T) => {
       dispatch({
         type: ActionEnum.REQUEST_SUCCESS,
         payload: res
