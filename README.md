@@ -14,11 +14,11 @@ A React Hook based on axios.
 
 ## Installation
 
-`npm install axios use-axios`
+`npm install axios react-axios-hook`
 
 OR
 
-`yarn add axios use-axios`
+`yarn add axios react-axios-hook`
 
 > `axios` is a peer dependency and needs to be installed explicitly
 
@@ -27,7 +27,7 @@ OR
 ### Basic Usage
 
 ```javascript
-import useAxios from 'use-axios'
+import useAxios from 'react-axios-hook'
 
 function App() {
   const [{ response, loading, error }, refresh] = useAxios('https://www.mxnzp.com/api/holiday/single/20181121')
@@ -43,7 +43,7 @@ ReactDOM.render(<App />, document.getElementById('root'))
 ### Global Config
 
 ```javascript
-import useAxios, { AxiosConfig } from 'use-axios'
+import useAxios, { AxiosConfig } from 'react-axios-hook'
 
 function Demo() {
   const [{ response, loading, error }, refresh] = useAxios('https://www.mxnzp.com/api/holiday/single/20181121')
@@ -73,7 +73,7 @@ ReactDOM.render(<App />, document.getElementById('root'))
 
 The package exports one default export and a name export AxiosConfig:
 
-`import useAxios, { AxiosConfig } from 'axios-hooks'`
+`import useAxios, { AxiosConfig } from 'react-axios-hook'`
 
 ### useAxios(url|config, options)
 
@@ -96,7 +96,7 @@ Returns:
 
 ## AxiosConfig
 
-`use-axios` uses a default axios object unless you define your own by `AxiosConfig` component.
+`react-axios-hook` uses a default axios object unless you define your own by `AxiosConfig` component.
 
 This component will define a global axiosInstance for further use.
 
@@ -112,7 +112,7 @@ When defining both `instance` and `config`, it will use `instance` and ignore `c
 
 ## Credits
 
-`use-axios` is inspired by [axios-hooks](https://github.com/simoneb/axios-hooks) and [swr](https://github.com/zeit/swr)
+`react-axios-hook` is inspired by [axios-hooks](https://github.com/simoneb/axios-hooks) and [swr](https://github.com/zeit/swr)
 
 ## License
 
