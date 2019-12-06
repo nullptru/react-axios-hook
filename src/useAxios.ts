@@ -1,5 +1,5 @@
-import { AxiosRequestConfig, AxiosInstance } from "axios";
-import { UseAxiosProps, Response, RefreshFunc, AxiosConfigProps } from "../types";
+import Axios, { AxiosRequestConfig, AxiosInstance } from "axios";
+import { UseAxiosProps, Response, RefreshFunc } from "../types";
 import { useContext, useReducer, useCallback, useEffect } from "react";
 import { AxiosContext } from "./AxiosConfig";
 
@@ -15,10 +15,10 @@ enum ActionEnum {
 }
 
 function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxiosProps): [Response<T>, RefreshFunc<T>] {
+  const globalConfig = useContext(AxiosContext) || {};
   let axiosConfig = {}
-  let hookOptions = { trigger: true, ...options }
-
-  const axiosInstance: AxiosInstance = useContext(AxiosContext)
+  const hookOptions = { trigger: true, ...globalConfig.globalOptions, ...options }
+  const axiosInstance: AxiosInstance = globalConfig.axiosInstance || Axios.create()
 
   const reducer = useCallback((state: Response<T>, action: Action): Response<T> => {
     switch (action.type) {
@@ -45,9 +45,10 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
   const stringifyConfig = JSON.stringify(axiosConfig);
 
   const refresh = useCallback((overwriteConfig?: AxiosRequestConfig, overwriteOptions?: UseAxiosProps/* for further use*/): Promise<T> | Error => {
+    dispatch({ type: ActionEnum.REQUEST_START  })
     return axiosInstance.request<AxiosRequestConfig, T>({ ...axiosConfig, ...overwriteConfig }).then((res: T) => {
       dispatch({
-        type: ActionEnum.REQUEST_START,
+        type: ActionEnum.REQUEST_SUCCESS,
         payload: res
       })
       return res;
@@ -62,7 +63,7 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
 
   // start request
   useEffect(() => {
-    if (options.trigger) {
+    if (hookOptions.trigger) {
       refresh();
     }
   }, [stringifyConfig])

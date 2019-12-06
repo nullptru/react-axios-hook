@@ -1,7 +1,9 @@
-import { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig, AxiosInstance } from "axios";
 
-declare interface AxiosConfigProps {
+declare interface GlobalConfigProps {
   config?: AxiosRequestConfig
+  instance?: AxiosInstance
+  options?: UseAxiosProps
 }
 
 declare interface UseAxiosProps {
