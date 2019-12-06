@@ -1,8 +1,10 @@
-# react-use-axios
+# react-axios-hook
 
-[![Build Status](https://travis-ci.org/nullptru/react-use-axios.svg?branch=master)](https://travis-ci.org/nullptru/react-use-axios)
+[![Build Status](https://travis-ci.org/nullptru/react-axios-hook.svg?branch=master)](https://travis-ci.org/nullptru/react-axios-hook)
+[![npm version](https://badge.fury.io/js/react-axios-hook.svg)](https://badge.fury.io/js/react-axios-hook)
+[![bundlephobia](https://badgen.net/bundlephobia/minzip/react-axios-hook)](https://bundlephobia.com/result?p=react-axios-hook)
 
-A React Hook based on axios.
+:fire: A React Hook based on axios.
 
 ## Features
 
