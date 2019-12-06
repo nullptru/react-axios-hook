@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Axios Hook Test</title>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js" crossorigin="anonymous"></script>
+  <script src="../dist/use-axios.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const Test = () => {
+      const [{ response, loading, error }, refresh] = useAxios.default({
+        url: '/lottery/ssq/aim_lottery?expect=2018135'
+      })
+      React.useEffect(() => {
+        setTimeout(() => {
+          refresh({ url: '/holiday/single/20181121' });
+          console.log('refresh')
+        }, 2000)
+      }, [])
+      return loading ? <div>Loading...</div> : (<div>{JSON.stringify(response)}</div>)
+    }
+    const GlobalConfig = () => {
+      return <useAxios.AxiosConfig config={{ baseURL: 'https://www.mxnzp.com/api/' }}>
+        <Test />  
+      </useAxios.AxiosConfig>
+    }
+    ReactDOM.render(<GlobalConfig/>, document.getElementById('root'))
+  </script>
+</body>
+</html>
