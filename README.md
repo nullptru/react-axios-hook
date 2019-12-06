@@ -1,4 +1,119 @@
-# react-axios-hook
-axios hook for react
+# react-use-axios
 
-working....
+[![Build Status](https://travis-ci.org/nullptru/react-use-axios.svg?branch=master)](https://travis-ci.org/nullptru/react-use-axios)
+
+A React Hook based on axios.
+
+## Features
+
+- Using Axios with React Hook
+- Support Typescript
+- Global Config with `AxiosConfig` component
+- Flexible with config axios or axios instance
+- FullControl with axios behavior，support loading status, manual refresh, fetching control...
+
+## Installation
+
+`npm install axios use-axios`
+
+OR
+
+`yarn add axios use-axios`
+
+> `axios` is a peer dependency and needs to be installed explicitly
+
+## Quick Start
+
+### Basic Usage
+
+```javascript
+import useAxios from 'use-axios'
+
+function App() {
+  const [{ response, loading, error }, refresh] = useAxios('https://www.mxnzp.com/api/holiday/single/20181121')
+
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>
+  }
+  return loading ? <div>Loading...</div> : (<div>{JSON.stringify(response)}</div>)
+}
+ReactDOM.render(<App />, document.getElementById('root'))
+```
+
+### Global Config
+
+```javascript
+import useAxios, { AxiosConfig } from 'use-axios'
+
+function Demo() {
+  const [{ response, loading, error }, refresh] = useAxios('https://www.mxnzp.com/api/holiday/single/20181121')
+
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>
+  }
+  return loading ? <div>Loading...</div> : (<div>{JSON.stringify(response)}</div>)
+}
+function App() {
+  return (
+    <AxiosConfig config={{baseURL: 'https://www.mxnzp.com/api/'}}>
+      <Demo />
+    </AxiosConfig>
+  )
+}
+ReactDOM.render(<App />, document.getElementById('root'))
+```
+
+## Documentation
+
+### API
+
+- [useAxios](#useaxiosurlconfig-options)
+
+## API
+
+The package exports one default export and a name export AxiosConfig:
+
+`import useAxios, { AxiosConfig } from 'axios-hooks'`
+
+### useAxios(url|config, options)
+
+The main React hook to execute HTTP requests.
+
+- `url|config` - The request URL or [config](https://github.com/axios/axios#request-config) object, the same argument accepted by `axios`.
+- `options` - An options object.
+  - `trigger` ( `true` ) - If false, the request is not executed immediately. Useful for non-GET requests that should not be executed when the component renders.
+
+Returns:
+
+`[{ loading, error, response }, refresh]`
+
+- `loading` - True if the request is in progress, otherwise False.
+- `error` - The [error](https://github.com/axios/.axios#handling-errors) value
+- `response` - The whole [success response](https://github.com/axios/axios#response-schema) object.
+
+- `refresh([url|config])` - A function to execute the request manually, bypassing the cache by default.
+  - `url|config` - Same with useAxios's first parameter, which is _shallow-merged_ with the config object provided when invoking the hook.
+
+## AxiosConfig
+
+`use-axios` uses a default axios object unless you define your own by `AxiosConfig` component.
+
+This component will define a global axiosInstance for further use.
+
+**Attension: This is a React Component**
+
+### Props
+- `instance` - the custom `axios` instance your define
+- `config`   - [config](https://github.com/axios/axios#request-config) object, the same argument accepted by `axios`, used to create a axios instance
+- `options`  - global options
+  - `trigger`(`true`)
+
+When defining both `instance` and `config`, it will use `instance` and ignore `config` parameter. 
+
+## Credits
+
+`use-axios` is inspired by [axios-hooks](https://github.com/simoneb/axios-hooks) and [swr](https://github.com/zeit/swr)
+
+## License
+
+MIT
