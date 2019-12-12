@@ -8,12 +8,14 @@ declare interface GlobalConfigProps {
 
 declare interface UseAxiosProps {
   trigger: boolean | (() => boolean);
+  cancelable: boolean
 }
 
 declare interface Response<T> {
   response: T
   loading: boolean
   error: any
+  isCancel: boolean
 }
 
 declare interface RefreshFunc<T> {

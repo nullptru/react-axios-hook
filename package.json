@@ -1,6 +1,6 @@
 {
   "name": "react-axios-hook",
-  "version": "1.0.2",
+  "version": "1.1.2",
   "description": "axios hook for react",
   "main": "./dist/use-axios.common.js",
   "module": "./dist/use-axios.esm.js",
@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && cross-env NODE_ENV=development rollup -c",
-    "lint": "eslint src/**.tsx src/**.ts --fix",
+    "lint": "eslint src/**.{tsx,ts} --fix",
     "ci": "npx git-cz",
     "release": "standard-version",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,14 +25,12 @@
     "axios",
     "typescript"
   ],
-  "dependencies": {
-    "@babel/runtime": "7.7.4"
-  },
   "peerDependencies": {
     "axios": "^0.18.0 || ^0.19.0",
     "react": "^16.8.0-0"
   },
   "devDependencies": {
+    "@babel/runtime": "7.7.4",
     "@babel/cli": "7.7.4",
     "@babel/core": "7.7.4",
     "@babel/plugin-transform-runtime": "7.7.4",

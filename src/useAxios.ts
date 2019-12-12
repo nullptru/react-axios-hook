@@ -1,6 +1,6 @@
-import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios'
+import Axios, { AxiosRequestConfig, AxiosInstance, CancelTokenSource } from 'axios'
 import { UseAxiosProps, Response, RefreshFunc } from '../types'
-import { useContext, useReducer, useCallback, useEffect } from 'react'
+import { useContext, useReducer, useCallback, useEffect, useRef } from 'react'
 import { AxiosContext } from './AxiosConfig'
 
 interface Action {
@@ -12,6 +12,7 @@ enum ActionEnum {
   REQUEST_START = 'REQUEST_START',
   REQUEST_SUCCESS = 'REQUEST_SUCCESS',
   REQUEST_ERROR = 'REQUEST_ERROR',
+  REQUEST_CANCEL = 'REQUEST_CANCEL'
 }
 
 function normalizeConfig(config: AxiosRequestConfig | string): AxiosRequestConfig {
@@ -26,8 +27,16 @@ function normalizeConfig(config: AxiosRequestConfig | string): AxiosRequestConfi
 function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxiosProps): [Response<T>, RefreshFunc<T>] {
   const globalConfig = useContext(AxiosContext) || {}
   const axiosConfig = normalizeConfig(config)
-  const hookOptions = { trigger: true, ...globalConfig.globalOptions, ...options }
+  const hookOptions = { trigger: true, cancelable: false, ...globalConfig.globalOptions, ...options }
   const axiosInstance: AxiosInstance = globalConfig.axiosInstance || Axios.create()
+
+  const cancelSource = useRef<CancelTokenSource>()
+
+  useEffect(() => {
+    if (hookOptions.cancelable) {
+      cancelSource.current = Axios.CancelToken.source()
+    }
+  }, [hookOptions.cancelable])
 
   const reducer = useCallback((state: Response<T>, action: Action): Response<T> => {
     switch (action.type) {
@@ -37,11 +46,13 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
         return { ...state, loading: false, response: action.payload }
       case ActionEnum.REQUEST_ERROR:
         return { ...state, loading: false, response: undefined, error: action.payload }
+      case ActionEnum.REQUEST_CANCEL:
+        return { ...state, loading: false, response: undefined, error: action.payload, isCancel: true }
       default:
         return state
     }
   }, [])
-  const [state, dispatch] = useReducer(reducer, { response: undefined, error: undefined, loading: false })
+  const [state, dispatch] = useReducer(reducer, { response: undefined, error: undefined, loading: false, isCancel: false })
 
   // for reactive detect
   const stringifyConfig = JSON.stringify(axiosConfig)
@@ -54,7 +65,11 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
       dispatch({ type: ActionEnum.REQUEST_START })
 
       return axiosInstance
-        .request<AxiosRequestConfig, T>({ ...axiosConfig, ...normalizeConfig(overwriteConfig) })
+        .request<AxiosRequestConfig, T>({
+          ...axiosConfig,
+          ...normalizeConfig(overwriteConfig),
+          cancelToken: cancelSource.current.token,
+        })
         .then((res: T) => {
           dispatch({
             type: ActionEnum.REQUEST_SUCCESS,
@@ -63,6 +78,12 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
           return res
         })
         .catch((error: any) => {
+          if(Axios.isCancel(error)) {
+            dispatch({
+              type: ActionEnum.REQUEST_CANCEL,
+              payload: error,
+            }) 
+          }
           dispatch({
             type: ActionEnum.REQUEST_ERROR,
             payload: error,
@@ -70,12 +91,13 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
           throw error
         })
     },
-    [stringifyConfig]
+    [stringifyConfig, hookOptions.cancelable]
   )
 
   // start request
   useEffect(() => {
-    if (hookOptions.trigger) {
+    const shouldFetch = typeof hookOptions.trigger === 'function' ? hookOptions.trigger() : hookOptions.trigger
+    if (shouldFetch) {
       refresh()
     }
   }, [stringifyConfig])

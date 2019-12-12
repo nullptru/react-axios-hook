@@ -23,7 +23,7 @@
       else {
           axiosInstance = Axios.create();
       }
-      return (React__default.createElement(AxiosContext.Provider, { value: { axiosInstance: axiosInstance, globalOptions: globalOptions } }, props.children));
+      return React__default.createElement(AxiosContext.Provider, { value: { axiosInstance: axiosInstance, globalOptions: globalOptions } }, props.children);
   };
 
   /*! *****************************************************************************
@@ -57,9 +57,11 @@
       ActionEnum["REQUEST_START"] = "REQUEST_START";
       ActionEnum["REQUEST_SUCCESS"] = "REQUEST_SUCCESS";
       ActionEnum["REQUEST_ERROR"] = "REQUEST_ERROR";
+      ActionEnum["REQUEST_CANCEL"] = "REQUEST_CANCEL";
   })(ActionEnum || (ActionEnum = {}));
   function normalizeConfig(config) {
-      if (typeof config === 'string') { // only url
+      if (typeof config === 'string') {
+          // only url
           return { url: config };
       }
       else {
@@ -69,8 +71,14 @@
   function useAxios(config, options) {
       var globalConfig = React.useContext(AxiosContext) || {};
       var axiosConfig = normalizeConfig(config);
-      var hookOptions = __assign(__assign({ trigger: true }, globalConfig.globalOptions), options);
+      var hookOptions = __assign(__assign({ trigger: true, cancelable: false }, globalConfig.globalOptions), options);
       var axiosInstance = globalConfig.axiosInstance || Axios.create();
+      var cancelSource = React.useRef();
+      React.useEffect(function () {
+          if (hookOptions.cancelable) {
+              cancelSource.current = Axios.CancelToken.source();
+          }
+      }, [hookOptions.cancelable]);
       var reducer = React.useCallback(function (state, action) {
           switch (action.type) {
               case ActionEnum.REQUEST_START:
@@ -79,32 +87,43 @@
                   return __assign(__assign({}, state), { loading: false, response: action.payload });
               case ActionEnum.REQUEST_ERROR:
                   return __assign(__assign({}, state), { loading: false, response: undefined, error: action.payload });
+              case ActionEnum.REQUEST_CANCEL:
+                  return __assign(__assign({}, state), { loading: false, response: undefined, error: action.payload, isCancel: true });
               default:
                   return state;
           }
       }, []);
-      var _a = React.useReducer(reducer, { response: undefined, error: undefined, loading: false }), state = _a[0], dispatch = _a[1];
+      var _a = React.useReducer(reducer, { response: undefined, error: undefined, loading: false, isCancel: false }), state = _a[0], dispatch = _a[1];
       // for reactive detect
       var stringifyConfig = JSON.stringify(axiosConfig);
       var refresh = React.useCallback(function (overwriteConfig, overwriteOptions /* for further use*/) {
           dispatch({ type: ActionEnum.REQUEST_START });
-          return axiosInstance.request(__assign(__assign({}, axiosConfig), normalizeConfig(overwriteConfig))).then(function (res) {
+          return axiosInstance
+              .request(__assign(__assign(__assign({}, axiosConfig), normalizeConfig(overwriteConfig)), { cancelToken: cancelSource.current.token }))
+              .then(function (res) {
               dispatch({
                   type: ActionEnum.REQUEST_SUCCESS,
-                  payload: res
+                  payload: res,
               });
               return res;
           })["catch"](function (error) {
+              if (Axios.isCancel(error)) {
+                  dispatch({
+                      type: ActionEnum.REQUEST_CANCEL,
+                      payload: error,
+                  });
+              }
               dispatch({
                   type: ActionEnum.REQUEST_ERROR,
-                  payload: error
+                  payload: error,
               });
               throw error;
           });
-      }, [stringifyConfig]);
+      }, [stringifyConfig, hookOptions.cancelable]);
       // start request
       React.useEffect(function () {
-          if (hookOptions.trigger) {
+          var shouldFetch = typeof hookOptions.trigger === 'function' ? hookOptions.trigger() : hookOptions.trigger;
+          if (shouldFetch) {
               refresh();
           }
       }, [stringifyConfig]);

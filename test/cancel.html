@@ -17,16 +17,17 @@
     const Test = () => {
       const [{ response, loading, error }, refresh] = useAxios.default({
         url: 'https://www.mxnzp.com/api/lottery/ssq/aim_lottery?expect=2018135'
-      })
+      }, { cancelable: true })
       React.useEffect(() => {
         setTimeout(() => {
           refresh('https://www.mxnzp.com/api/holiday/single/20181121');
+          refresh('https://www.mxnzp.com/api/holiday/single/20181121');
           console.log('refresh')
-        }, 2000)
+        })
         setTimeout(() => {
-          refresh('https://www.mxnzp.com/holiday/single/20181121');
-          console.log('error')
-        }, 4000)
+          refresh('https://www.mxnzp.com/api/holiday/single/20181121');
+          console.log('cancel')
+        })
       }, [])
       if (error) {
         return <div>{JSON.stringify(error)}</div>
