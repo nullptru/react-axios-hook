@@ -1,13 +1,17 @@
 {
   "name": "react-axios-hook",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "axios hook for react",
   "main": "./dist/use-axios.common.js",
   "module": "./dist/use-axios.esm.js",
   "author": "nullptru@gmail.com",
   "license": "MIT",
   "typings": "./types",
-  "files": ["dist", "types", "test"],
+  "files": [
+    "dist",
+    "types",
+    "test"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nullptru/react-axios-hook.git"

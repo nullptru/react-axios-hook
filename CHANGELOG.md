@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/nullptru/react-axios-hook/compare/v1.1.0...v1.2.0) (2019-12-15)
+
+
+### Features
+
+* **useaxios:** add cancel token ([729a549](https://github.com/nullptru/react-axios-hook/commit/729a5492e40ed4e7aa180c01ac6ea312048a4500))
+* add cancel token ([7b16a87](https://github.com/nullptru/react-axios-hook/commit/7b16a879688eef1bdc13532a7b9e55ccbc75bbde))
+
 ## 1.0.0 (2019-12-06)
 
 
