@@ -15,7 +15,7 @@
   <div id="root"></div>
   <script type="text/babel">
     const Test = () => {
-      const [{ response, loading, error }, refresh] = useAxios.default({
+      const [{ response, loading, error, isCancel }, refresh] = useAxios.default({
         url: 'https://www.mxnzp.com/api/lottery/ssq/aim_lottery?expect=2018135'
       }, { cancelable: true })
       React.useEffect(() => {
@@ -29,6 +29,7 @@
           console.log('cancel')
         })
       }, [])
+      console.log(response, loading, error, isCancel);
       if (error) {
         return <div>{JSON.stringify(error)}</div>
       }

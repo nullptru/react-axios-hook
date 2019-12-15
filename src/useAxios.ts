@@ -12,7 +12,7 @@ enum ActionEnum {
   REQUEST_START = 'REQUEST_START',
   REQUEST_SUCCESS = 'REQUEST_SUCCESS',
   REQUEST_ERROR = 'REQUEST_ERROR',
-  REQUEST_CANCEL = 'REQUEST_CANCEL'
+  REQUEST_CANCEL = 'REQUEST_CANCEL',
 }
 
 function normalizeConfig(config: AxiosRequestConfig | string): AxiosRequestConfig {
@@ -32,12 +32,6 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
 
   const cancelSource = useRef<CancelTokenSource>()
 
-  useEffect(() => {
-    if (hookOptions.cancelable) {
-      cancelSource.current = Axios.CancelToken.source()
-    }
-  }, [hookOptions.cancelable])
-
   const reducer = useCallback((state: Response<T>, action: Action): Response<T> => {
     switch (action.type) {
       case ActionEnum.REQUEST_START:
@@ -52,7 +46,12 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
         return state
     }
   }, [])
-  const [state, dispatch] = useReducer(reducer, { response: undefined, error: undefined, loading: false, isCancel: false })
+  const [state, dispatch] = useReducer(reducer, {
+    response: undefined,
+    error: undefined,
+    loading: false,
+    isCancel: false,
+  })
 
   // for reactive detect
   const stringifyConfig = JSON.stringify(axiosConfig)
@@ -62,8 +61,14 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
       overwriteConfig?: AxiosRequestConfig | string,
       overwriteOptions?: UseAxiosProps /* for further use*/
     ): Promise<T> | Error => {
+      // if should cancel, cancel last request
+      if (cancelSource.current) {
+        cancelSource.current.cancel()
+      }
+      const options = { ...hookOptions, ...overwriteOptions }
+      // add new cancel source
+      cancelSource.current = options.cancelable ? Axios.CancelToken.source() : undefined
       dispatch({ type: ActionEnum.REQUEST_START })
-
       return axiosInstance
         .request<AxiosRequestConfig, T>({
           ...axiosConfig,
@@ -78,11 +83,11 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
           return res
         })
         .catch((error: any) => {
-          if(Axios.isCancel(error)) {
+          if (Axios.isCancel(error)) {
             dispatch({
               type: ActionEnum.REQUEST_CANCEL,
               payload: error,
-            }) 
+            })
           }
           dispatch({
             type: ActionEnum.REQUEST_ERROR,
@@ -91,9 +96,8 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
           throw error
         })
     },
-    [stringifyConfig, hookOptions.cancelable]
+    [stringifyConfig]
   )
-
   // start request
   useEffect(() => {
     const shouldFetch = typeof hookOptions.trigger === 'function' ? hookOptions.trigger() : hookOptions.trigger
@@ -106,3 +110,110 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
 }
 
 export default useAxios
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

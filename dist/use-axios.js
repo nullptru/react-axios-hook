@@ -74,11 +74,6 @@
       var hookOptions = __assign(__assign({ trigger: true, cancelable: false }, globalConfig.globalOptions), options);
       var axiosInstance = globalConfig.axiosInstance || Axios.create();
       var cancelSource = React.useRef();
-      React.useEffect(function () {
-          if (hookOptions.cancelable) {
-              cancelSource.current = Axios.CancelToken.source();
-          }
-      }, [hookOptions.cancelable]);
       var reducer = React.useCallback(function (state, action) {
           switch (action.type) {
               case ActionEnum.REQUEST_START:
@@ -93,10 +88,22 @@
                   return state;
           }
       }, []);
-      var _a = React.useReducer(reducer, { response: undefined, error: undefined, loading: false, isCancel: false }), state = _a[0], dispatch = _a[1];
+      var _a = React.useReducer(reducer, {
+          response: undefined,
+          error: undefined,
+          loading: false,
+          isCancel: false,
+      }), state = _a[0], dispatch = _a[1];
       // for reactive detect
       var stringifyConfig = JSON.stringify(axiosConfig);
       var refresh = React.useCallback(function (overwriteConfig, overwriteOptions /* for further use*/) {
+          // if should cancel, cancel last request
+          if (cancelSource.current) {
+              cancelSource.current.cancel();
+          }
+          var options = __assign(__assign({}, hookOptions), overwriteOptions);
+          // add new cancel source
+          cancelSource.current = options.cancelable ? Axios.CancelToken.source() : undefined;
           dispatch({ type: ActionEnum.REQUEST_START });
           return axiosInstance
               .request(__assign(__assign(__assign({}, axiosConfig), normalizeConfig(overwriteConfig)), { cancelToken: cancelSource.current.token }))
@@ -119,7 +126,7 @@
               });
               throw error;
           });
-      }, [stringifyConfig, hookOptions.cancelable]);
+      }, [stringifyConfig]);
       // start request
       React.useEffect(function () {
           var shouldFetch = typeof hookOptions.trigger === 'function' ? hookOptions.trigger() : hookOptions.trigger;
