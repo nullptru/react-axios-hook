@@ -1,6 +1,6 @@
 {
   "name": "react-axios-hook",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "axios hook for react",
   "main": "./dist/use-axios.common.js",
   "module": "./dist/use-axios.esm.js",

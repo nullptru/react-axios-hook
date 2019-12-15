@@ -38,6 +38,7 @@ module.exports = {
     "@typescript-eslint/triple-slash-reference": ['error', { "path": "always", "types": "never", "lib": "never" }],
     "react/jsx-indent": [2, 4],
     "react/jsx-no-undef": [2, { allowGlobals: true }],
-    "jsx-control-statements/jsx-use-if-tag": 0
+    "jsx-control-statements/jsx-use-if-tag": 0,
+    "@typescript-eslint/indent": 0
   }
 };

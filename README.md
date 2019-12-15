@@ -10,6 +10,7 @@
 
 - Using Axios with React Hook
 - Support Typescript
+- Support cancel request
 - Global Config with `AxiosConfig` component
 - Flexible with config axios or axios instance
 - FullControl with axios behavior，support loading status, manual refresh, fetching control...
@@ -84,6 +85,7 @@ The main React hook to execute HTTP requests.
 - `url|config` - The request URL or [config](https://github.com/axios/axios#request-config) object, the same argument accepted by `axios`.
 - `options` - An options object.
   - `trigger` ( `true` ) - If false, the request is not executed immediately. Useful for non-GET requests that should not be executed when the component renders.
+  - `cancelable` ( `false` ) - If true, the last request will be canceled if last request is not finished when new request get into processing.
 
 Returns:
 
@@ -92,6 +94,7 @@ Returns:
 - `loading` - True if the request is in progress, otherwise False.
 - `error` - The [error](https://github.com/axios/.axios#handling-errors) value
 - `response` - The whole [success response](https://github.com/axios/axios#response-schema) object.
+- `isCacel` - True if the request is canceled, otherwise False.
 
 - `refresh([url|config])` - A function to execute the request manually, bypassing the cache by default.
   - `url|config` - Same with useAxios's first parameter, which is _shallow-merged_ with the config object provided when invoking the hook.
@@ -109,6 +112,7 @@ This component will define a global axiosInstance for further use.
 - `config`   - [config](https://github.com/axios/axios#request-config) object, the same argument accepted by `axios`, used to create a axios instance
 - `options`  - global options
   - `trigger`(`true`)
+  - `cancelable`(`false`)
 
 When defining both `instance` and `config`, it will use `instance` and ignore `config` parameter. 
 
