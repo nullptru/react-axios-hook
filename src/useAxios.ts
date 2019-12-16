@@ -73,7 +73,7 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
         .request<AxiosRequestConfig, T>({
           ...axiosConfig,
           ...normalizeConfig(overwriteConfig),
-          cancelToken: cancelSource.current.token,
+          cancelToken: (cancelSource.current || {}).token,
         })
         .then((res: T) => {
           dispatch({
