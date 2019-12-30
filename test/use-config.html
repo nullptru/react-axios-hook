@@ -17,7 +17,7 @@
     const Test = () => {
       const [{ response, loading, error }, refresh] = useAxios.default({
         url: '/lottery/ssq/aim_lottery?expect=2018135'
-      })
+      }, [])
       React.useEffect(() => {
         setTimeout(() => {
           refresh({ url: '/holiday/single/20181121' });

@@ -13,18 +13,18 @@ var isObject = function (o) { return Object.prototype.toString.call(o) === '[obj
 var AxiosContext = React__default.createContext(null);
 var AxiosConfig = function (props) {
     var config = props.config, instance = props.instance, options = props.options;
-    var axiosInstance;
+    var axiosInstanceRef = React.useRef();
     var globalOptions = options;
     if (instance) {
-        axiosInstance = instance;
+        axiosInstanceRef.current = instance;
     }
     else if (config && isObject(config)) {
-        axiosInstance = Axios.create(config);
+        axiosInstanceRef.current = Axios.create(config);
     }
     else {
-        axiosInstance = Axios.create();
+        axiosInstanceRef.current = Axios.create();
     }
-    return React__default.createElement(AxiosContext.Provider, { value: { axiosInstance: axiosInstance, globalOptions: globalOptions } }, props.children);
+    return React__default.createElement(AxiosContext.Provider, { value: { axiosInstance: axiosInstanceRef.current, globalOptions: globalOptions } }, props.children);
 };
 
 /*! *****************************************************************************
@@ -69,20 +69,23 @@ function normalizeConfig(config) {
         return config;
     }
 }
-function useAxios(config, options) {
+// useAxios
+function useAxios(config, options, dependencies) {
     var globalConfig = React.useContext(AxiosContext) || {};
     var axiosConfig = normalizeConfig(config);
-    var hookOptions = __assign(__assign({ trigger: true, cancelable: false }, globalConfig.globalOptions), options);
+    var initialOptions = __assign({ trigger: true, cancelable: false }, globalConfig.globalOptions);
+    var hookOptions = Array.isArray(options) ? initialOptions : __assign(__assign({}, initialOptions), options);
     var axiosInstance = globalConfig.axiosInstance || Axios.create();
+    var deps = Array.isArray(options) ? options : dependencies;
     var cancelSource = React.useRef();
     var reducer = React.useCallback(function (state, action) {
         switch (action.type) {
             case ActionEnum.REQUEST_START:
-                return __assign(__assign({}, state), { loading: true });
+                return __assign(__assign({}, state), { loading: true, response: undefined, error: undefined, isCancel: false });
             case ActionEnum.REQUEST_SUCCESS:
-                return __assign(__assign({}, state), { loading: false, response: action.payload });
+                return __assign(__assign({}, state), { loading: false, response: action.payload, error: undefined, isCancel: false });
             case ActionEnum.REQUEST_ERROR:
-                return __assign(__assign({}, state), { loading: false, response: undefined, error: action.payload });
+                return __assign(__assign({}, state), { loading: false, response: undefined, error: action.payload, isCancel: false });
             case ActionEnum.REQUEST_CANCEL:
                 return __assign(__assign({}, state), { loading: false, response: undefined, error: action.payload, isCancel: true });
             default:
@@ -95,8 +98,6 @@ function useAxios(config, options) {
         loading: false,
         isCancel: false,
     }), state = _a[0], dispatch = _a[1];
-    // for reactive detect
-    var stringifyConfig = JSON.stringify(axiosConfig);
     var refresh = React.useCallback(function (overwriteConfig, overwriteOptions /* for further use*/) {
         // if should cancel, cancel last request
         if (cancelSource.current) {
@@ -107,7 +108,7 @@ function useAxios(config, options) {
         cancelSource.current = options.cancelable ? Axios.CancelToken.source() : undefined;
         dispatch({ type: ActionEnum.REQUEST_START });
         return axiosInstance
-            .request(__assign(__assign(__assign({}, axiosConfig), normalizeConfig(overwriteConfig)), { cancelToken: cancelSource.current.token }))
+            .request(__assign(__assign(__assign({}, axiosConfig), normalizeConfig(overwriteConfig)), { cancelToken: (cancelSource.current || {}).token }))
             .then(function (res) {
             dispatch({
                 type: ActionEnum.REQUEST_SUCCESS,
@@ -127,14 +128,14 @@ function useAxios(config, options) {
             });
             throw error;
         });
-    }, [stringifyConfig]);
+    }, deps);
     // start request
     React.useEffect(function () {
         var shouldFetch = typeof hookOptions.trigger === 'function' ? hookOptions.trigger() : hookOptions.trigger;
         if (shouldFetch) {
             refresh();
         }
-    }, [stringifyConfig]);
+    }, deps);
     return [state, refresh];
 }
 

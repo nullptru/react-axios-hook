@@ -33,7 +33,7 @@ OR
 import useAxios from 'react-axios-hook'
 
 function App() {
-  const [{ response, loading, error }, refresh] = useAxios('https://www.mxnzp.com/api/holiday/single/20181121')
+  const [{ response, loading, error }, refresh] = useAxios('https://www.mxnzp.com/api/holiday/single/20181121', [])
 
   if (error) {
     return <div>{JSON.stringify(error)}</div>
@@ -78,7 +78,7 @@ The package exports one default export and a name export AxiosConfig:
 
 `import useAxios, { AxiosConfig } from 'react-axios-hook'`
 
-### useAxios(url|config, options)
+### useAxios(url|config, options?, dependencies?)
 
 The main React hook to execute HTTP requests.
 
@@ -86,6 +86,7 @@ The main React hook to execute HTTP requests.
 - `options` - An options object.
   - `trigger` ( `true` ) - If false, the request is not executed immediately. Useful for non-GET requests that should not be executed when the component renders.
   - `cancelable` ( `false` ) - If true, the last request will be canceled if last request is not finished when new request get into processing.
+- `dependencies` - dependencies array
 
 Returns:
 

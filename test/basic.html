@@ -15,9 +15,10 @@
   <div id="root"></div>
   <script type="text/babel">
     const Test = () => {
+      const [flag, setFlag] = React.useState(false)
       const [{ response, loading, error }, refresh] = useAxios.default({
         url: 'https://www.mxnzp.com/api/lottery/ssq/aim_lottery?expect=2018135'
-      })
+      }, [flag])
       React.useEffect(() => {
         setTimeout(() => {
           refresh('https://www.mxnzp.com/api/holiday/single/20181121');
@@ -26,8 +27,10 @@
         setTimeout(() => {
           refresh('https://www.mxnzp.com/holiday/single/20181121');
           console.log('error')
+          setTimeout(() => setFlag(true), 2000)
         }, 4000)
       }, [])
+      console.log(response, loading, error)
       if (error) {
         return <div>{JSON.stringify(error)}</div>
       }

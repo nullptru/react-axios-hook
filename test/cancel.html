@@ -17,7 +17,7 @@
     const Test = () => {
       const [{ response, loading, error, isCancel }, refresh] = useAxios.default({
         url: 'https://www.mxnzp.com/api/lottery/ssq/aim_lottery?expect=2018135'
-      }, { cancelable: true })
+      }, { cancelable: true }, [])
       React.useEffect(() => {
         setTimeout(() => {
           refresh('https://www.mxnzp.com/api/holiday/single/20181121');
@@ -30,7 +30,7 @@
         })
       }, [])
       console.log(response, loading, error, isCancel);
-      if (error) {
+      if (error && error.message) {
         return <div>{JSON.stringify(error)}</div>
       }
       return loading ? <div>Loading...</div> : (<div>{JSON.stringify(response)}</div>)

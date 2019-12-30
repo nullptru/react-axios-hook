@@ -23,12 +23,16 @@ function normalizeConfig(config: AxiosRequestConfig | string): AxiosRequestConfi
     return config
   }
 }
-
-function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxiosProps): [Response<T>, RefreshFunc<T>] {
+// function useAxios<T = any>(config: AxiosRequestConfig | string, dependencies?: any[]): [Response<T>, RefreshFunc<T>];
+function useAxios<T = any>(config: AxiosRequestConfig | string, options?: UseAxiosProps, dependencies?: any[]): [Response<T>, RefreshFunc<T>];
+// useAxios
+function useAxios<T = any>(config: AxiosRequestConfig | string, options?: UseAxiosProps | any[], dependencies?: any[]): [Response<T>, RefreshFunc<T>] {
   const globalConfig = useContext(AxiosContext) || {}
   const axiosConfig = normalizeConfig(config)
-  const hookOptions = { trigger: true, cancelable: false, ...globalConfig.globalOptions, ...options }
+  let initialOptions = { trigger: true, cancelable: false, ...globalConfig.globalOptions }
+  const hookOptions = Array.isArray(options) ? initialOptions : { ...initialOptions, ...options };
   const axiosInstance: AxiosInstance = globalConfig.axiosInstance || Axios.create()
+  const deps = Array.isArray(options) ? options : dependencies
 
   const cancelSource = useRef<CancelTokenSource>()
 
@@ -52,9 +56,6 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
     loading: false,
     isCancel: false,
   })
-
-  // for reactive detect
-  const stringifyConfig = JSON.stringify(axiosConfig)
 
   const refresh = useCallback(
     (
@@ -96,7 +97,7 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
           throw error
         })
     },
-    [stringifyConfig]
+    deps
   )
   // start request
   useEffect(() => {
@@ -104,7 +105,7 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
     if (shouldFetch) {
       refresh()
     }
-  }, [stringifyConfig])
+  }, deps)
 
   return [state, refresh]
 }
