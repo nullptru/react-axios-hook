@@ -35,11 +35,11 @@ function useAxios<T = any>(config: AxiosRequestConfig | string, options: UseAxio
   const reducer = useCallback((state: Response<T>, action: Action): Response<T> => {
     switch (action.type) {
       case ActionEnum.REQUEST_START:
-        return { ...state, loading: true }
+        return { ...state, loading: true, response: undefined, error: undefined, isCancel: false }
       case ActionEnum.REQUEST_SUCCESS:
-        return { ...state, loading: false, response: action.payload }
+        return { ...state, loading: false, response: action.payload, error: undefined, isCancel: false }
       case ActionEnum.REQUEST_ERROR:
-        return { ...state, loading: false, response: undefined, error: action.payload }
+        return { ...state, loading: false, response: undefined, error: action.payload, isCancel: false }
       case ActionEnum.REQUEST_CANCEL:
         return { ...state, loading: false, response: undefined, error: action.payload, isCancel: true }
       default:
