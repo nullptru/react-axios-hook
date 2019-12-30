@@ -1,24 +1,24 @@
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useRef } from 'react'
 import { GlobalConfigProps } from '../types'
-import Axios from 'axios'
+import Axios, { AxiosInstance } from 'axios'
 import { isObject } from './utils'
 
 export const AxiosContext = React.createContext(null)
 
 const AxiosConfig: React.FC<GlobalConfigProps> = (props: PropsWithChildren<GlobalConfigProps>) => {
   const { config, instance, options } = props
-  let axiosInstance
+  const axiosInstanceRef = useRef<AxiosInstance>()
   const globalOptions = options
 
   if (instance) {
-    axiosInstance = instance
+    axiosInstanceRef.current = instance
   } else if (config && isObject(config)) {
-    axiosInstance = Axios.create(config)
+    axiosInstanceRef.current = Axios.create(config)
   } else {
-    axiosInstance = Axios.create()
+    axiosInstanceRef.current = Axios.create()
   }
 
-  return <AxiosContext.Provider value={{ axiosInstance, globalOptions }}>{props.children}</AxiosContext.Provider>
+  return <AxiosContext.Provider value={{ axiosInstance: axiosInstanceRef.current, globalOptions }}>{props.children}</AxiosContext.Provider>
 }
 
 export default AxiosConfig
