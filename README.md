@@ -86,6 +86,7 @@ The main React hook to execute HTTP requests.
 - `options` - An options object.
   - `trigger` ( `true` ) - If false, the request is not executed immediately. Useful for non-GET requests that should not be executed when the component renders.
   - `cancelable` ( `false` ) - If true, the last request will be canceled if last request is not finished when new request get into processing.
+  - `initResponse` - If set, response will use this value as initial value
 - `dependencies` - dependencies array
 
 Returns:

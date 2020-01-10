@@ -26,19 +26,19 @@ function normalizeConfig(config: AxiosRequestConfig | string): AxiosRequestConfi
 // function useAxios<T = any>(config: AxiosRequestConfig | string, dependencies?: any[]): [Response<T>, RefreshFunc<T>];
 function useAxios<T = any>(
   config: AxiosRequestConfig | string,
-  options?: UseAxiosProps,
+  options?: UseAxiosProps<T>,
   dependencies?: any[]
 ): [Response<T>, RefreshFunc<T>]
 // useAxios
 function useAxios<T = any>(
   config: AxiosRequestConfig | string,
-  options?: UseAxiosProps | any[],
+  options?: UseAxiosProps<T> | any[],
   dependencies?: any[]
 ): [Response<T>, RefreshFunc<T>] {
   const globalConfig = useContext(AxiosContext) || {}
   const axiosConfig = normalizeConfig(config)
   const initialOptions = { trigger: true, cancelable: false, ...globalConfig.globalOptions }
-  const hookOptions = Array.isArray(options) ? initialOptions : { ...initialOptions, ...options }
+  const hookOptions: UseAxiosProps<T> = Array.isArray(options) ? initialOptions : { ...initialOptions, ...options }
   const axiosInstance: AxiosInstance = globalConfig.axiosInstance || Axios.create()
   const deps = Array.isArray(options) ? options : dependencies
 
@@ -59,16 +59,15 @@ function useAxios<T = any>(
     }
   }, [])
   const [state, dispatch] = useReducer(reducer, {
-    response: undefined,
+    response: hookOptions.initResponse,
     error: undefined,
     loading: false,
     isCancel: false,
   })
 
-  const refresh = useCallback((
-    overwriteConfig?: AxiosRequestConfig | string,
-    overwriteOptions?: UseAxiosProps /* for further use*/
-  ): Promise<T> | Error => {
+  const refresh = useCallback((overwriteConfig?: AxiosRequestConfig | string, overwriteOptions?: UseAxiosProps<T>):
+    | Promise<T>
+    | Error => {
     // if should cancel, cancel last request
     if (cancelSource.current) {
       cancelSource.current.cancel()
