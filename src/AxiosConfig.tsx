@@ -18,7 +18,11 @@ const AxiosConfig: React.FC<GlobalConfigProps> = (props: PropsWithChildren<Globa
     axiosInstanceRef.current = Axios.create()
   }
 
-  return <AxiosContext.Provider value={{ axiosInstance: axiosInstanceRef.current, globalOptions }}>{props.children}</AxiosContext.Provider>
+  return (
+    <AxiosContext.Provider value={{ axiosInstance: axiosInstanceRef.current, globalOptions }}>
+      {props.children}
+    </AxiosContext.Provider>
+  )
 }
 
 export default AxiosConfig

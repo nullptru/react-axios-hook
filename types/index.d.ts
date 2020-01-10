@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosInstance } from "axios";
+import { AxiosRequestConfig, AxiosInstance } from 'axios'
 
 declare interface GlobalConfigProps {
   config?: AxiosRequestConfig
@@ -7,7 +7,7 @@ declare interface GlobalConfigProps {
 }
 
 declare interface UseAxiosProps {
-  trigger: boolean | (() => boolean);
+  trigger: boolean | (() => boolean)
   cancelable: boolean
 }
 
