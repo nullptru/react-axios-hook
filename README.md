@@ -96,7 +96,7 @@ Returns:
 - `loading` - True if the request is in progress, otherwise False.
 - `error` - The [error](https://github.com/axios/.axios#handling-errors) value
 - `response` - The whole [success response](https://github.com/axios/axios#response-schema) object.
-- `isCacel` - True if the request is canceled, otherwise False.
+- `isCancel` - True if the request is canceled, otherwise False.
 
 - `refresh([url|config])` - A function to execute the request manually, bypassing the cache by default.
   - `url|config` - Same with useAxios's first parameter, which is _shallow-merged_ with the config object provided when invoking the hook.
